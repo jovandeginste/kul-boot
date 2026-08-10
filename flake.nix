@@ -9,6 +9,26 @@
   outputs = { self, nixpkgs, flake-utils }:
     let
       themeName = "kuleuven-punk";
+      frameCount = 300;
+      threshold = 16;
+      changeProbability = 0.005;
+      maxFlickerFrames = 4;
+      featherMargin = 4;
+      neonThreshold = 0;
+      neonAlphaThreshold = 1;
+      neonFeatherMargin = 6;
+      neonPeriod = 35;
+      neonMinScale = 0.55;
+      neonMaxScale = 1.6;
+      logoThreshold = 0;
+      logoAlphaThreshold = 1;
+      logoFeatherMargin = 6;
+      logoFlickerProbability = 0.02;
+      logoMinFlickerFrames = 2;
+      logoMaxFlickerFrames = 9;
+      logoFlickerOnProbability = 0.25;
+      fps = 10;
+      background = "0x000000";
       mkThemePackage = pkgs:
         let
           python = pkgs.python3.withPackages (ps: with ps; [
@@ -36,33 +56,32 @@
               --neon-mask "$src/kuleuven-punk-neon-border.png" \
               --logo-mask "$src/kuleuven-punk-neon-logo.png" \
               --output-dir "$workdir/frames" \
-              --count 300 \
-              --jobs 1 \
-              --threshold 16 \
-              --change-probability 0.005 \
-              --max-flicker-frames 4 \
-              --feather-margin 4 \
-              --neon-threshold 0 \
-              --neon-alpha-threshold 1 \
-              --neon-feather-margin 6 \
-              --neon-period 35 \
-              --neon-min-scale 0.55 \
-              --neon-max-scale 1.6 \
-              --logo-threshold 0 \
-              --logo-alpha-threshold 1 \
-              --logo-feather-margin 6 \
-              --logo-flicker-probability 0.02 \
-              --logo-min-flicker-frames 2 \
-              --logo-max-flicker-frames 9 \
-              --logo-flicker-on-probability 0.25 \
-              --seed 1
+              --count ${toString frameCount} \
+              --jobs ''${NIX_BUILD_CORES:-1} \
+              --threshold ${toString threshold} \
+              --change-probability ${toString changeProbability} \
+              --max-flicker-frames ${toString maxFlickerFrames} \
+              --feather-margin ${toString featherMargin} \
+              --neon-threshold ${toString neonThreshold} \
+              --neon-alpha-threshold ${toString neonAlphaThreshold} \
+              --neon-feather-margin ${toString neonFeatherMargin} \
+              --neon-period ${toString neonPeriod} \
+              --neon-min-scale ${toString neonMinScale} \
+              --neon-max-scale ${toString neonMaxScale} \
+              --logo-threshold ${toString logoThreshold} \
+              --logo-alpha-threshold ${toString logoAlphaThreshold} \
+              --logo-feather-margin ${toString logoFeatherMargin} \
+              --logo-flicker-probability ${toString logoFlickerProbability} \
+              --logo-min-flicker-frames ${toString logoMinFlickerFrames} \
+              --logo-max-flicker-frames ${toString logoMaxFlickerFrames} \
+              --logo-flicker-on-probability ${toString logoFlickerOnProbability}
 
             ${python}/bin/python "$src/generate_plymouth_theme.py" \
               --frames-dir "$workdir/frames" \
               --output-dir "$workdir/theme" \
               --theme-name ${themeName} \
-              --fps 10 \
-              --background 0x000000
+              --fps ${toString fps} \
+              --background ${background}
 
             mkdir -p "$out/share/plymouth/themes/${themeName}"
             cp -r "$workdir/theme/"* "$out/share/plymouth/themes/${themeName}/"
