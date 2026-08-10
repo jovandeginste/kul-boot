@@ -63,24 +63,29 @@ Useful knobs:
 ## Flake Outputs
 
 This flake exports:
-- `packages.<system>.kuleuven-punk` (also `default`)
+- `packages.<system>.kuleuven-punk-plymouth` (also `default`)
+- `packages.<system>.kuleuven-punk` (alias)
 - `overlays.default`
 - `nixosModules.default`
 - `devShells.default`
+
+The package installs a complete Plymouth theme at:
+
+- `$out/share/plymouth/themes/kuleuven-punk/`
 
 ### Use in another flake
 
 ```nix
 {
-  inputs.kuleuven-punk.url = "github:<user>/<repo>";
+  inputs.kul-boot.url = "github:<user>/<repo>";
 
-  outputs = { self, nixpkgs, kuleuven-punk, ... }: {
+  outputs = { self, nixpkgs, kul-boot, ... }: {
     nixosConfigurations.host = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       modules = [
-        kuleuven-punk.nixosModules.default
+        kul-boot.nixosModules.default
         {
-          services.kuleuvenPunkPlymouth.enable = true;
+          services.kulBoot.plymouth.enable = true;
         }
       ];
     };
@@ -88,8 +93,27 @@ This flake exports:
 }
 ```
 
-Or consume the package directly:
+### Package-only usage (no module)
 
 ```nix
-kuleuven-punk.packages.${pkgs.system}.kuleuven-punk
+{
+  boot.plymouth.enable = true;
+  boot.plymouth.themePackages = [ inputs.kul-boot.packages.${pkgs.system}.default ];
+  boot.plymouth.theme = "kuleuven-punk";
+}
+```
+
+Equivalent explicit package attribute:
+
+```nix
+inputs.kul-boot.packages.${pkgs.system}.kuleuven-punk-plymouth
+```
+
+### Module usage
+
+```nix
+{
+  imports = [ inputs.kul-boot.nixosModules.default ];
+  services.kulBoot.plymouth.enable = true;
+}
 ```

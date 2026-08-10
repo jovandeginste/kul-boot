@@ -85,6 +85,7 @@
         themePackage = mkThemePackage pkgs;
       in {
         packages = {
+          "kuleuven-punk-plymouth" = themePackage;
           "${themeName}" = themePackage;
           default = themePackage;
         };
@@ -99,25 +100,28 @@
     ))
     // {
       overlays.default = final: _prev: {
+        "kuleuven-punk-plymouth" = mkThemePackage final;
         "${themeName}" = mkThemePackage final;
       };
 
       nixosModules.default = { config, lib, pkgs, ... }:
         let
-          cfg = config.services.kuleuvenPunkPlymouth;
+          cfg = config.services.kulBoot.plymouth;
         in {
-          options.services.kuleuvenPunkPlymouth = {
-            enable = lib.mkEnableOption "the KU Leuven punk Plymouth theme";
+          options.services.kulBoot = {
+            plymouth = {
+              enable = lib.mkEnableOption "the KU Leuven punk Plymouth theme";
 
-            package = lib.mkOption {
-              type = lib.types.package;
-              default = self.packages.${pkgs.system}.${themeName};
-              description = "Plymouth theme package to install.";
+              package = lib.mkOption {
+                type = lib.types.package;
+                default = self.packages.${pkgs.system}."kuleuven-punk-plymouth";
+                description = "Plymouth theme package to install.";
+              };
             };
           };
 
           config = lib.mkIf cfg.enable {
-            boot.plymouth.enable = lib.mkDefault true;
+            boot.plymouth.enable = true;
             boot.plymouth.theme = themeName;
             boot.plymouth.themePackages = [ cfg.package ];
           };
