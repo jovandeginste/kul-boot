@@ -1,0 +1,16 @@
+# Nix direnv artifacts
+.direnv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Generated animation frames and videos
+frames/
+*.mp4
+
+# Generated Plymouth theme output
+plymouth-theme-*/
+
+# OS/editor noise
+.DS_Store
