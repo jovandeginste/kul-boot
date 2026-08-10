@@ -107,8 +107,11 @@ preview: gif
 	$(PREVIEW_PLAYER) -fs -autoexit -loglevel warning $(GIF)
 
 preview-plymouth:
+	(sleep 15 && sudo plymouth --quit) &
 	sudo bash -c '\
-		plymouthd; plymouth --show-splash; sleep 5; plymouth --quit \
+		plymouthd; \
+		plymouth --show-splash; \
+		plymouth ask-for-password --prompt "LUKS passphrase (test): "; \
 		'
 
 plymouth-theme:
