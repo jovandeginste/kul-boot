@@ -108,6 +108,8 @@ Plymouth.SetRefreshFunction(refresh_callback);
 
 global.password_prompt = Sprite();
 global.password_bullets = Sprite();
+global.previous_prompt = "";
+global.previous_bullets = 0;
 
 fun display_normal_callback ()
   {{
@@ -120,6 +122,9 @@ fun display_password_callback (prompt, bullets)
     prompt_text = prompt;
     if (prompt_text == "")
       prompt_text = "Passphrase:";
+
+    if ((bullets == 0) && (previous_bullets > 0) && (prompt_text == previous_prompt))
+      prompt_text = "Unlocking...";
 
     bullet_text = "";
     for (index = 0; index < bullets; index++)
@@ -138,6 +143,9 @@ fun display_password_callback (prompt, bullets)
 
     password_bullets.SetImage(bullets_image);
     password_bullets.SetPosition(bullets_x, bullets_y, 20000);
+
+    previous_prompt = prompt_text;
+    previous_bullets = bullets;
   }}
 
 Plymouth.SetDisplayNormalFunction(display_normal_callback);

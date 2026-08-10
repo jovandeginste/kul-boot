@@ -31,7 +31,7 @@ PLYMOUTH_THEME_NAME ?= kuleuven-punk
 # Background color used by Plymouth theme (hex RGB).
 PLYMOUTH_BACKGROUND ?= 0x000000
 # Optional RNG seed for reproducible flicker patterns.
-SEED ?=
+SEED ?= 1425
 # Mask threshold (0-255) above which pixels are treated as TL tubes.
 THRESHOLD ?= 16
 # Probability that a tube changes brightness each frame.
@@ -59,7 +59,7 @@ LOGO_ALPHA_THRESHOLD ?= 1
 # Feather margin in pixels around logo mask edges for outward glow blend.
 LOGO_FEATHER_MARGIN ?= 6
 # Probability that a logo flicker burst starts on a frame.
-LOGO_FLICKER_PROBABILITY ?= 0.02
+LOGO_FLICKER_PROBABILITY ?= 0.1
 # Minimum length of a logo flicker burst in frames.
 LOGO_MIN_FLICKER_FRAMES ?= 1
 # Maximum length of a logo flicker burst in frames.
