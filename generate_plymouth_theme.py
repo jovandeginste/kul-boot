@@ -83,7 +83,7 @@ updates_per_frame = {updates_per_frame};
 {frame_lines}
 
 sprite = Sprite();
-sprite.SetZ(10000);
+sprite.SetZ(-10000);
 sprite.SetX(Window.GetX());
 sprite.SetY(Window.GetY());
 

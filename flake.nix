@@ -124,6 +124,13 @@
             boot.plymouth.enable = true;
             boot.plymouth.theme = themeName;
             boot.plymouth.themePackages = [ cfg.package ];
+            boot.consoleLogLevel = 3;
+            boot.kernelParams = [
+              "quiet"
+              "loglevel=3"
+              "rd.udev.log_level=3"
+              "udev.log_priority=3"
+            ];
           };
         };
     };
