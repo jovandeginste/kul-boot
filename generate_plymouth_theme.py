@@ -105,6 +105,43 @@ fun refresh_callback ()
   }}
 
 Plymouth.SetRefreshFunction(refresh_callback);
+
+global.password_prompt = Sprite();
+global.password_bullets = Sprite();
+
+fun display_normal_callback ()
+  {{
+    password_prompt.SetImage(Image());
+    password_bullets.SetImage(Image());
+  }}
+
+fun display_password_callback (prompt, bullets)
+  {{
+    prompt_text = prompt;
+    if (prompt_text == "")
+      prompt_text = "Passphrase:";
+
+    bullet_text = "";
+    for (index = 0; index < bullets; index++)
+      bullet_text = bullet_text + "*";
+
+    prompt_image = Image.Text(prompt_text, 1, 1, 1);
+    bullets_image = Image.Text(bullet_text, 1, 1, 1);
+
+    prompt_x = Window.GetX() + (Window.GetWidth() - prompt_image.GetWidth()) / 2;
+    prompt_y = Window.GetY() + Window.GetHeight() - 160;
+    bullets_x = Window.GetX() + (Window.GetWidth() - bullets_image.GetWidth()) / 2;
+    bullets_y = prompt_y + 40;
+
+    password_prompt.SetImage(prompt_image);
+    password_prompt.SetPosition(prompt_x, prompt_y, 20000);
+
+    password_bullets.SetImage(bullets_image);
+    password_bullets.SetPosition(bullets_x, bullets_y, 20000);
+  }}
+
+Plymouth.SetDisplayNormalFunction(display_normal_callback);
+Plymouth.SetDisplayPasswordFunction(display_password_callback);
 """
 
 
