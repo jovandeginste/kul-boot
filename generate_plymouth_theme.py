@@ -14,7 +14,9 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--frames-dir", type=Path, default=Path("frames"))
     parser.add_argument("--pattern", default="frame_*.png")
-    parser.add_argument("--output-dir", type=Path, default=Path("plymouth-theme-kuleuven-punk"))
+    parser.add_argument(
+        "--output-dir", type=Path, default=Path("plymouth-theme-kuleuven-punk")
+    )
     parser.add_argument("--theme-name", default="kuleuven-punk")
     parser.add_argument("--fps", type=int, default=10)
     parser.add_argument("--background", default="0x000000")
@@ -65,7 +67,7 @@ def generate_script(
 
     # Plymouth refresh callback is often called at ~50 Hz.
     # Skipping callbacks lets us approximate the target FPS.
-    updates_per_frame = max(1, round(50 / fps))
+    updates_per_frame = max(1, round(25 / fps))
 
     frame_lines = "\n".join(
         f'frames[{index}] = Image("{name}");' for index, name in enumerate(frame_names)

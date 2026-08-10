@@ -107,7 +107,7 @@ preview: gif
 	$(PREVIEW_PLAYER) -fs -autoexit -loglevel warning $(GIF)
 
 preview-plymouth:
-	(sleep 15 && sudo plymouth --quit) &
+	(sleep 50 && sudo plymouth --quit) &
 	sudo bash -c '\
 		plymouthd; \
 		plymouth --show-splash; \
