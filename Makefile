@@ -15,7 +15,7 @@ LOGO_MASK ?= kuleuven-punk-neon-logo.png
 # Directory where generated frame PNG files are written.
 OUTPUT_DIR ?= frames
 # Number of frames to generate.
-COUNT ?= 500
+COUNT ?= 300
 # Number of worker processes used for frame rendering.
 JOBS ?= $(shell nproc)
 # Frames per second for GIF encoding.
@@ -35,9 +35,9 @@ SEED ?= 1425
 # Mask threshold (0-255) above which pixels are treated as TL tubes.
 THRESHOLD ?= 16
 # Probability that a tube changes brightness each frame.
-CHANGE_PROBABILITY ?= 0.005
+CHANGE_PROBABILITY ?= 0.01
 # Maximum consecutive flicker frames per tube (1-9).
-MAX_FLICKER_FRAMES ?= 9
+MAX_FLICKER_FRAMES ?= 6
 # Feather margin in pixels around tube edges for smoother fading.
 FEATHER_MARGIN ?= 4
 # Threshold (0-255) above which pixels are treated as neon border.
@@ -47,7 +47,7 @@ NEON_ALPHA_THRESHOLD ?= 1
 # Feather margin in pixels around neon mask edges for smoother pulse blend.
 NEON_FEATHER_MARGIN ?= 6
 # Pulse period in frames for the neon glow animation.
-NEON_PERIOD ?= 150
+NEON_PERIOD ?= 75
 # Minimum brightness scale for neon pulse.
 NEON_MIN_SCALE ?= 0.60
 # Maximum brightness scale for neon pulse.
@@ -59,13 +59,13 @@ LOGO_ALPHA_THRESHOLD ?= 1
 # Feather margin in pixels around logo mask edges for outward glow blend.
 LOGO_FEATHER_MARGIN ?= 6
 # Probability that a logo flicker burst starts on a frame.
-LOGO_FLICKER_PROBABILITY ?= 0.005
+LOGO_FLICKER_PROBABILITY ?= 0.01
 # Minimum length of a logo flicker burst in frames.
-LOGO_MIN_FLICKER_FRAMES ?= 5
+LOGO_MIN_FLICKER_FRAMES ?= 3
 # Maximum length of a logo flicker burst in frames.
-LOGO_MAX_FLICKER_FRAMES ?= 30
+LOGO_MAX_FLICKER_FRAMES ?= 10
 # Probability of logo being ON during a flicker burst frame.
-LOGO_FLICKER_ON_PROBABILITY ?= 0.25
+LOGO_FLICKER_ON_PROBABILITY ?= 0.20
 
 # Adds --seed only when SEED is set.
 SEED_ARG := $(if $(SEED),--seed $(SEED),)

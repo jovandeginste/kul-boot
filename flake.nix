@@ -12,24 +12,24 @@
     flake-utils,
   }: let
     themeName = "kuleuven-punk";
-    frameCount = 500;
+    frameCount = 300;
     threshold = 16;
-    changeProbability = 0.005;
-    maxFlickerFrames = 9;
+    changeProbability = 0.01;
+    maxFlickerFrames = 6;
     featherMargin = 4;
     neonThreshold = 0;
     neonAlphaThreshold = 1;
     neonFeatherMargin = 6;
-    neonPeriod = 150;
+    neonPeriod = 75;
     neonMinScale = 0.60;
     neonMaxScale = 1.1;
     logoThreshold = 0;
     logoAlphaThreshold = 1;
     logoFeatherMargin = 6;
-    logoFlickerProbability = 0.005;
-    logoMinFlickerFrames = 5;
-    logoMaxFlickerFrames = 30;
-    logoFlickerOnProbability = 0.25;
+    logoFlickerProbability = 0.01;
+    logoMinFlickerFrames = 3;
+    logoMaxFlickerFrames = 10;
+    logoFlickerOnProbability = 0.20;
     fps = 25;
     background = "0x000000";
     seed = 1425;
