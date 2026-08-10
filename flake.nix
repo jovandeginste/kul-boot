@@ -12,27 +12,27 @@
     flake-utils,
   }: let
     themeName = "kuleuven-punk";
-    frameCount = 60;
+    frameCount = 500;
     threshold = 16;
-    changeProbability = 0.01;
-    maxFlickerFrames = 1;
+    changeProbability = 0.001;
+    maxFlickerFrames = 9;
     featherMargin = 4;
     neonThreshold = 0;
     neonAlphaThreshold = 1;
     neonFeatherMargin = 6;
-    neonPeriod = 5;
-    neonMinScale = 0.55;
-    neonMaxScale = 1.6;
+    neonPeriod = 150;
+    neonMinScale = 0.60;
+    neonMaxScale = 1.1;
     logoThreshold = 0;
     logoAlphaThreshold = 1;
     logoFeatherMargin = 6;
-    logoFlickerProbability = 0.02;
-    logoMinFlickerFrames = 1;
-    logoMaxFlickerFrames = 3;
+    logoFlickerProbability = 0.004;
+    logoMinFlickerFrames = 5;
+    logoMaxFlickerFrames = 30;
     logoFlickerOnProbability = 0.25;
-    fps = 2;
+    fps = 25;
     background = "0x000000";
-    seed = null;
+    seed = 1425;
     seedArg = if seed == null then "" else "--seed ${toString seed}";
     mkThemePackage = pkgs: let
       python = pkgs.python3.withPackages (ps:

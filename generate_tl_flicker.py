@@ -391,27 +391,36 @@ def main() -> None:
     levels = [1.0] * tube_count
     flicker_remaining = [0] * tube_count
     needs_bright_frame = [False] * tube_count
+    active_tube: int | None = None
     args.output_dir.mkdir(parents=True, exist_ok=True)
 
     tube_levels: list[list[float]] = []
     for _ in range(args.count):
         frame_levels = [1.0] * tube_count
+        if active_tube is not None and flicker_remaining[active_tube] > 0:
+            levels[active_tube] = random_flicker_level()
+            flicker_remaining[active_tube] -= 1
+            if flicker_remaining[active_tube] == 0:
+                needs_bright_frame[active_tube] = True
+        elif active_tube is not None and needs_bright_frame[active_tube]:
+            levels[active_tube] = 1.0
+            needs_bright_frame[active_tube] = False
+            active_tube = None
+        else:
+            active_tube = None
+            if random.random() < args.change_probability:
+                active_tube = random.randrange(tube_count)
+                flicker_remaining[active_tube] = random.randint(1, args.max_flicker_frames)
+                levels[active_tube] = random_flicker_level()
+                flicker_remaining[active_tube] -= 1
+                if flicker_remaining[active_tube] == 0:
+                    needs_bright_frame[active_tube] = True
+
         for i in range(tube_count):
-            if flicker_remaining[i] > 0:
-                levels[i] = random_flicker_level()
-                flicker_remaining[i] -= 1
-                if flicker_remaining[i] == 0:
-                    needs_bright_frame[i] = True
-            else:
+            if i != active_tube:
                 levels[i] = 1.0
-                if needs_bright_frame[i]:
-                    needs_bright_frame[i] = False
-                elif random.random() < args.change_probability:
-                    flicker_remaining[i] = random.randint(1, args.max_flicker_frames)
-                    levels[i] = random_flicker_level()
-                    flicker_remaining[i] -= 1
-                    if flicker_remaining[i] == 0:
-                        needs_bright_frame[i] = True
+                flicker_remaining[i] = 0
+                needs_bright_frame[i] = False
             frame_levels[i] = levels[i]
         tube_levels.append(frame_levels)
 

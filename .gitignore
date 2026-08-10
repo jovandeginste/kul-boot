@@ -7,7 +7,6 @@ __pycache__/
 
 # Generated animation frames and videos
 frames/
-*.gif
 
 # Generated Plymouth theme output
 plymouth-theme-*/

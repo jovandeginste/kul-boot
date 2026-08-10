@@ -2,7 +2,7 @@
 
 This repository generates an animated Plymouth boot theme from KU Leuven punk artwork.
 
-![KU Leuven punk preview](kuleuven-punk.png)
+![KU Leuven punk preview](tl-flicker.gif)
 
 It includes:
 - A frame generator with TL flicker, neon border pulse, and neon logo flicker.
