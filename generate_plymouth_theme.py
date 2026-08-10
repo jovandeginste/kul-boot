@@ -83,10 +83,13 @@ updates_per_frame = {updates_per_frame};
 {frame_lines}
 
 sprite = Sprite();
-sprite.SetImage(frames[0]);
 sprite.SetZ(10000);
-sprite.SetX(Window.GetX() + (Window.GetWidth(0) / 2 - {frame_width} / 2));
-sprite.SetY(Window.GetY() + (Window.GetHeight(0) / 2 - {frame_height} / 2));
+sprite.SetX(Window.GetX());
+sprite.SetY(Window.GetY());
+
+screen_width = Window.GetWidth(0);
+screen_height = Window.GetHeight(0);
+sprite.SetImage(frames[0].Scale(screen_width, screen_height));
 
 fun refresh_callback ()
   {{
@@ -98,7 +101,7 @@ fun refresh_callback ()
     if (frame_index >= frame_count)
       frame_index = 0;
 
-    sprite.SetImage(frames[frame_index]);
+    sprite.SetImage(frames[frame_index].Scale(screen_width, screen_height));
   }}
 
 Plymouth.SetRefreshFunction(refresh_callback);

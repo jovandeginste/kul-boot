@@ -13,7 +13,7 @@ It includes:
 
 - `python3`
 - Python package `Pillow`
-- `ffmpeg` (for MP4 and sequence preview)
+- `ffmpeg` (for GIF and sequence preview)
 - `make`
 
 If you use Nix, enter the dev shell:
@@ -25,8 +25,8 @@ nix develop
 ## Make Targets
 
 - `make generate` - render PNG frames into `frames/`
-- `make mp4` - encode `frames/` into `tl-flicker.mp4`
-- `make preview` - build MP4 and preview it with `ffplay`
+- `make gif` - encode `frames/` into `tl-flicker.gif`
+- `make preview` - build GIF and preview it with `ffplay`
 - `make preview-sequence` - preview raw PNG sequence directly
 - `make plymouth-theme` - generate Plymouth theme directory
 - `make clean` - remove generated files
@@ -36,7 +36,7 @@ nix develop
 ```bash
 make generate
 make preview-sequence
-make mp4
+make gif
 make plymouth-theme
 ```
 

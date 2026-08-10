@@ -18,10 +18,10 @@ OUTPUT_DIR ?= frames
 COUNT ?= 300
 # Number of worker processes used for frame rendering.
 JOBS ?= $(shell nproc)
-# Frames per second for MP4 encoding.
+# Frames per second for GIF encoding.
 FPS ?= 10
-# Output MP4 filename.
-VIDEO ?= tl-flicker.mp4
+# Output GIF filename.
+GIF ?= tl-flicker.gif
 # Player command used for local animation preview.
 PREVIEW_PLAYER ?= ffplay
 # Output directory where Plymouth theme files are written.
@@ -70,7 +70,7 @@ LOGO_FLICKER_ON_PROBABILITY ?= 0.25
 # Adds --seed only when SEED is set.
 SEED_ARG := $(if $(SEED),--seed $(SEED),)
 
-.PHONY: generate mp4 preview preview-sequence plymouth-theme clean
+.PHONY: generate gif preview preview-sequence plymouth-theme clean
 
 generate:
 	$(PYTHON) $(SCRIPT) \
@@ -100,11 +100,11 @@ generate:
 		--logo-flicker-on-probability $(LOGO_FLICKER_ON_PROBABILITY) \
 		$(SEED_ARG)
 
-mp4:
-	ffmpeg -y -framerate $(FPS) -i $(OUTPUT_DIR)/frame_%04d.png -vf "scale=trunc(iw/2)*2:trunc(ih/2)*2" -c:v libx264 -pix_fmt yuv420p $(VIDEO)
+gif:
+	ffmpeg -y -framerate $(FPS) -i $(OUTPUT_DIR)/frame_%04d.png -vf "split[s0][s1];[s0]palettegen=reserve_transparent=0[p];[s1][p]paletteuse" $(GIF)
 
-preview: mp4
-	$(PREVIEW_PLAYER) -autoexit -loglevel warning $(VIDEO)
+preview: gif
+	$(PREVIEW_PLAYER) -fs -autoexit -loglevel warning $(GIF)
 
 preview-plymouth:
 	sudo bash -c '\
@@ -120,4 +120,4 @@ plymouth-theme:
 		--background $(PLYMOUTH_BACKGROUND)
 
 clean:
-	rm -rf $(OUTPUT_DIR) $(PLYMOUTH_OUTPUT_DIR) $(VIDEO) __pycache__
+	rm -rf $(OUTPUT_DIR) $(PLYMOUTH_OUTPUT_DIR) $(GIF) __pycache__
