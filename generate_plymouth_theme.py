@@ -18,6 +18,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--theme-name", default="kuleuven-punk")
     parser.add_argument("--fps", type=int, default=10)
     parser.add_argument("--background", default="0x000000")
+    parser.add_argument("--runtime-themes-dir", default="/run/plymouth/themes")
     return parser.parse_args()
 
 
@@ -104,15 +105,16 @@ Plymouth.SetRefreshFunction(refresh_callback);
 """
 
 
-def generate_plymouth_file(theme_name: str) -> str:
+def generate_plymouth_file(theme_name: str, runtime_themes_dir: str) -> str:
+    theme_dir = f"{runtime_themes_dir.rstrip('/')}/{theme_name}"
     return f"""[Plymouth Theme]
 Name={theme_name}
 Description=Animated boot theme generated from frame sequence
 ModuleName=script
 
 [script]
-ImageDir=/usr/share/plymouth/themes/{theme_name}
-ScriptFile=/usr/share/plymouth/themes/{theme_name}/{theme_name}.script
+ImageDir={theme_dir}
+ScriptFile={theme_dir}/{theme_name}.script
 """
 
 
@@ -142,7 +144,7 @@ def main() -> None:
     script_path = args.output_dir / f"{args.theme_name}.script"
     script_path.write_text(script_content, encoding="utf-8")
 
-    plymouth_content = generate_plymouth_file(args.theme_name)
+    plymouth_content = generate_plymouth_file(args.theme_name, args.runtime_themes_dir)
     plymouth_path = args.output_dir / f"{args.theme_name}.plymouth"
     plymouth_path.write_text(plymouth_content, encoding="utf-8")
 

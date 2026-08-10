@@ -106,8 +106,10 @@ mp4:
 preview: mp4
 	$(PREVIEW_PLAYER) -autoexit -loglevel warning $(VIDEO)
 
-preview-sequence:
-	$(PREVIEW_PLAYER) -autoexit -loglevel warning -framerate $(FPS) -i $(OUTPUT_DIR)/frame_%04d.png
+preview-plymouth:
+	sudo bash -c '\
+		plymouthd; plymouth --show-splash; sleep 5; plymouth --quit \
+		'
 
 plymouth-theme:
 	$(PYTHON) $(PLYMOUTH_SCRIPT) \
