@@ -35,7 +35,7 @@ SEED ?= 1425
 # Mask threshold (0-255) above which pixels are treated as TL tubes.
 THRESHOLD ?= 16
 # Probability that a tube changes brightness each frame.
-CHANGE_PROBABILITY ?= 0.001
+CHANGE_PROBABILITY ?= 0.005
 # Maximum consecutive flicker frames per tube (1-9).
 MAX_FLICKER_FRAMES ?= 9
 # Feather margin in pixels around tube edges for smoother fading.
@@ -59,7 +59,7 @@ LOGO_ALPHA_THRESHOLD ?= 1
 # Feather margin in pixels around logo mask edges for outward glow blend.
 LOGO_FEATHER_MARGIN ?= 6
 # Probability that a logo flicker burst starts on a frame.
-LOGO_FLICKER_PROBABILITY ?= 0.004
+LOGO_FLICKER_PROBABILITY ?= 0.005
 # Minimum length of a logo flicker burst in frames.
 LOGO_MIN_FLICKER_FRAMES ?= 5
 # Maximum length of a logo flicker burst in frames.

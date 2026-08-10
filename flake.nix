@@ -14,7 +14,7 @@
     themeName = "kuleuven-punk";
     frameCount = 500;
     threshold = 16;
-    changeProbability = 0.001;
+    changeProbability = 0.005;
     maxFlickerFrames = 9;
     featherMargin = 4;
     neonThreshold = 0;
@@ -26,7 +26,7 @@
     logoThreshold = 0;
     logoAlphaThreshold = 1;
     logoFeatherMargin = 6;
-    logoFlickerProbability = 0.004;
+    logoFlickerProbability = 0.005;
     logoMinFlickerFrames = 5;
     logoMaxFlickerFrames = 30;
     logoFlickerOnProbability = 0.25;
