@@ -123,8 +123,6 @@ global.status_sprite = Sprite();
 global.progress_track_sprite = Sprite();
 global.progress_fill_sprite = Sprite();
 global.progress_percent_sprite = Sprite();
-global.previous_prompt = "";
-global.previous_bullets = 0;
 
 progress_track_sprite.SetImage(progress_track_pixel.Scale(progress_bar_max_width, progress_bar_height));
 progress_track_sprite.SetPosition(progress_bar_x, progress_bar_y, 18980);
@@ -140,7 +138,7 @@ fun display_normal_callback ()
 
 fun update_status_callback (text)
   {{
-    if (text == "")
+    if (text == "" || String.StrStr(text, "plymouth"))
       {{
         status_sprite.SetImage(Image());
         return;
@@ -180,15 +178,6 @@ fun boot_progress_callback (duration, progress)
 
 fun display_password_callback (prompt, bullets)
   {{
-    if ((bullets == 0) && (previous_bullets > 0))
-      {{
-        password_prompt.SetImage(Image());
-        password_bullets.SetImage(Image());
-        previous_prompt = "";
-        previous_bullets = bullets;
-        return;
-      }}
-
     prompt_text = prompt;
     if (prompt_text == "")
       prompt_text = "Passphrase:";
@@ -210,15 +199,22 @@ fun display_password_callback (prompt, bullets)
 
     password_bullets.SetImage(bullets_image);
     password_bullets.SetPosition(bullets_x, bullets_y, 20000);
+  }}
 
-    previous_prompt = prompt_text;
-    previous_bullets = bullets;
+fun keyboard_callback (keyboard_input)
+  {{
+    if (keyboard_input == "Return" || keyboard_input == "Enter")
+      {{
+        password_prompt.SetImage(Image());
+        password_bullets.SetImage(Image());
+      }}
   }}
 
 Plymouth.SetDisplayNormalFunction(display_normal_callback);
 Plymouth.SetDisplayPasswordFunction(display_password_callback);
 Plymouth.SetUpdateStatusFunction(update_status_callback);
 Plymouth.SetBootProgressFunction(boot_progress_callback);
+Plymouth.SetKeyboardFunction(keyboard_callback);
 """
 
 
