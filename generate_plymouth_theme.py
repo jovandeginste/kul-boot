@@ -146,7 +146,7 @@ fun update_status_callback (text)
         return;
       }}
 
-    status_image = Image.Text(text, 1, 1, 1);
+    status_image = Image.Text(text, 0, 240 / 255.0, 1.0);
     status_x = Window.GetX() + (Window.GetWidth() - status_image.GetWidth()) / 2;
     status_y = Window.GetY() + Window.GetHeight() - 220;
 
@@ -170,7 +170,7 @@ fun boot_progress_callback (duration, progress)
     progress_fill_sprite.SetPosition(progress_bar_x, progress_bar_y, 18985);
 
     percent_text = "" + Math.Int(normalized_progress * 100) + "%";
-    percent_image = Image.Text(percent_text, 1, 1, 1);
+    percent_image = Image.Text(percent_text, 0, 240 / 255.0, 1.0);
     percent_x = Window.GetX() + (Window.GetWidth() - percent_image.GetWidth()) / 2;
     percent_y = progress_bar_y - 28;
 
@@ -191,8 +191,8 @@ fun display_password_callback (prompt, bullets)
     for (index = 0; index < bullets; index++)
       bullet_text = bullet_text + "*";
 
-    prompt_image = Image.Text(prompt_text, 1, 1, 1);
-    bullets_image = Image.Text(bullet_text, 1, 1, 1);
+    prompt_image = Image.Text(prompt_text, 0, 240 / 255.0, 1.0);
+    bullets_image = Image.Text(bullet_text, 0, 240 / 255.0, 1.0);
 
     prompt_x = Window.GetX() + (Window.GetWidth() - prompt_image.GetWidth()) / 2;
     prompt_y = Window.GetY() + Window.GetHeight() - 160;
@@ -249,7 +249,7 @@ def main() -> None:
     progress_track_pixel.save(progress_track_pixel_path)
 
     progress_fill_pixel_path = args.output_dir / "progress_fill_pixel.png"
-    progress_fill_pixel = Image.new("RGBA", (1, 1), (255, 255, 255, 244))
+    progress_fill_pixel = Image.new("RGBA", (1, 1), (32, 107, 242, 244))
     progress_fill_pixel.save(progress_fill_pixel_path)
 
     script_content = generate_script(

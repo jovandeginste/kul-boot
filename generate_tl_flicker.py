@@ -98,7 +98,9 @@ def compute_feather_weights(mask: list[list[bool]], margin: int) -> list[list[fl
     height = len(mask)
     width = len(mask[0]) if height else 0
     if margin <= 0:
-        return [[1.0 if mask[y][x] else 0.0 for x in range(width)] for y in range(height)]
+        return [
+            [1.0 if mask[y][x] else 0.0 for x in range(width)] for y in range(height)
+        ]
 
     inf = 10**9
     distances = [[inf for _ in range(width)] for _ in range(height)]
@@ -201,7 +203,11 @@ def print_progress(current: int, total: int, width: int = 40) -> None:
     filled = int(width * current / total)
     bar = "#" * filled + "-" * (width - filled)
     percent = (100.0 * current) / total
-    print(f"\rGenerating frames [{bar}] {current}/{total} ({percent:5.1f}%)", end="", flush=True)
+    print(
+        f"\rGenerating frames [{bar}] {current}/{total} ({percent:5.1f}%)",
+        end="",
+        flush=True,
+    )
 
 
 def init_worker(context: dict[str, object]) -> None:
@@ -263,7 +269,9 @@ def render_frame(frame: int) -> int:
             amplitude = neon_amplitude_jitter[i]
             cycle = ((frame / neon_period) * speed * (2.0 * math.pi)) + phase
             pulse = (math.sin(cycle) + 1.0) * 0.5
-            group_scale = neon_min_scale + ((neon_max_scale - neon_min_scale) * pulse * amplitude)
+            group_scale = neon_min_scale + (
+                (neon_max_scale - neon_min_scale) * pulse * amplitude
+            )
 
             for x, y, weight in pixels:
                 effective_scale = 1.0 + ((group_scale - 1.0) * weight)
@@ -305,9 +313,13 @@ def main() -> None:
     if args.neon_period <= 0:
         raise ValueError("--neon-period must be greater than zero")
     if args.neon_min_scale <= 0 or args.neon_max_scale <= 0:
-        raise ValueError("--neon-min-scale and --neon-max-scale must be greater than zero")
+        raise ValueError(
+            "--neon-min-scale and --neon-max-scale must be greater than zero"
+        )
     if args.neon_min_scale > args.neon_max_scale:
-        raise ValueError("--neon-min-scale must be less than or equal to --neon-max-scale")
+        raise ValueError(
+            "--neon-min-scale must be less than or equal to --neon-max-scale"
+        )
     if args.logo_flicker_probability < 0.0 or args.logo_flicker_probability > 1.0:
         raise ValueError("--logo-flicker-probability must be between 0 and 1")
     if args.logo_flicker_on_probability < 0.0 or args.logo_flicker_on_probability > 1.0:
@@ -338,12 +350,57 @@ def main() -> None:
 
     width, height = base_image.size
     base_pixels = base_image.load()
+
+    sf_y = height / 1080.0
+    sf_x = width / 1920.0
+    boxes_1080 = [
+        (1080 - 295, 1080 - 240, int(1920 * 0.2), int(1920 * 0.8)),
+        (1080 - 235, 1080 - 200, int(1920 * 0.2), int(1920 * 0.8)),
+        (1080 - 180, 1080 - 100, int(1920 * 0.2), int(1920 * 0.8)),
+    ]
+    margin = 8
+    for ymin_1080, ymax_1080, xmin_1920, xmax_1920 in boxes_1080:
+        ymin = int(ymin_1080 * sf_y)
+        ymax = int(ymax_1080 * sf_y)
+        xmin = int(xmin_1920 * sf_x)
+        xmax = int(xmax_1920 * sf_x)
+
+        for y in range(max(0, ymin - margin), min(height, ymax + margin)):
+            for x in range(max(0, xmin - margin), min(width, xmax + margin)):
+                dx = 0
+                if x < xmin:
+                    dx = xmin - x
+                elif x > xmax:
+                    dx = x - xmax
+
+                dy = 0
+                if y < ymin:
+                    dy = ymin - y
+                elif y > ymax:
+                    dy = y - ymax
+
+                dist = max(dx, dy)
+                if dist <= margin:
+                    weight = 1.0 - (dist / float(margin + 1))
+                else:
+                    weight = 0.0
+
+                if weight > 0.0:
+                    red, green, blue, alpha = base_pixels[x, y]
+                    factor = 0.3 * weight
+                    base_pixels[x, y] = (
+                        int(red * factor),
+                        int(green * factor),
+                        int(blue * factor),
+                        alpha,
+                    )
     mask_pixels = mask_image.load()
     neon_mask_pixels = neon_mask_image.load()
     logo_mask_pixels = logo_mask_image.load()
 
     mask_binary = [
-        [mask_pixels[x, y] >= args.threshold for x in range(width)] for y in range(height)
+        [mask_pixels[x, y] >= args.threshold for x in range(width)]
+        for y in range(height)
     ]
     labels, tube_count = connected_components(mask_binary)
     tube_effect_pixels = compute_outward_feather_groups(
@@ -410,7 +467,9 @@ def main() -> None:
             active_tube = None
             if random.random() < args.change_probability:
                 active_tube = random.randrange(tube_count)
-                flicker_remaining[active_tube] = random.randint(1, args.max_flicker_frames)
+                flicker_remaining[active_tube] = random.randint(
+                    1, args.max_flicker_frames
+                )
                 levels[active_tube] = random_flicker_level()
                 flicker_remaining[active_tube] -= 1
                 if flicker_remaining[active_tube] == 0:
@@ -430,7 +489,9 @@ def main() -> None:
     for _ in range(args.count):
         logo_level = 1.0
         if logo_flicker_remaining > 0:
-            logo_level = 1.0 if random.random() < args.logo_flicker_on_probability else 0.0
+            logo_level = (
+                1.0 if random.random() < args.logo_flicker_on_probability else 0.0
+            )
             logo_flicker_remaining -= 1
             if logo_flicker_remaining == 0:
                 logo_needs_bright_frame = True
@@ -473,8 +534,12 @@ def main() -> None:
             print_progress(frame + 1, args.count)
     else:
         completed = 0
-        with ProcessPoolExecutor(max_workers=args.jobs, initializer=init_worker, initargs=(worker_context,)) as executor:
-            futures = [executor.submit(render_frame, frame) for frame in range(args.count)]
+        with ProcessPoolExecutor(
+            max_workers=args.jobs, initializer=init_worker, initargs=(worker_context,)
+        ) as executor:
+            futures = [
+                executor.submit(render_frame, frame) for frame in range(args.count)
+            ]
             for _ in as_completed(futures):
                 completed += 1
                 print_progress(completed, args.count)
