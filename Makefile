@@ -34,6 +34,8 @@ THEME_DIR ?= $(PLYMOUTH_OUTPUT_DIR)
 THEME_DIR_ABS := $(abspath $(THEME_DIR))
 # Plymouth package path used to locate script plugin for local testing.
 PLYMOUTH_PKG ?= $(shell nix-build '<nixpkgs>' -A plymouth --no-out-link)
+# Runtime themes directory embedded in generated .plymouth metadata.
+PLYMOUTH_RUNTIME_THEMES_DIR ?= /run/plymouth/themes
 # Background color used by Plymouth theme (hex RGB).
 PLYMOUTH_BACKGROUND ?= 0x000000
 # Optional RNG seed for reproducible flicker patterns.
@@ -113,9 +115,10 @@ preview: gif
 	$(PREVIEW_PLAYER) -fs -autoexit -loglevel warning $(GIF)
 
 preview-plymouth:
+	$(MAKE) plymouth-theme PLYMOUTH_OUTPUT_DIR=$(THEME_DIR_ABS)/$(PLYMOUTH_THEME_NAME) PLYMOUTH_RUNTIME_THEMES_DIR=$(THEME_DIR_ABS)
 	-sudo plymouth --quit
 	(sleep 15 && sudo plymouth --quit) &
-	sudo plymouthd --debug --mode=boot --theme=$(THEME_DIR_ABS)/$(PLYMOUTH_THEME_NAME).plymouth --theme-path=$(THEME_DIR_ABS) --plugin-path=$(PLYMOUTH_PKG)/lib/plymouth
+	sudo plymouthd --debug --mode=boot --theme=$(THEME_DIR_ABS)/$(PLYMOUTH_THEME_NAME)/$(PLYMOUTH_THEME_NAME).plymouth --theme-path=$(THEME_DIR_ABS) --plugin-path=$(PLYMOUTH_PKG)/lib/plymouth
 	sudo plymouth --show-splash
 	sudo plymouth ask-for-password --prompt "LUKS passphrase (test): "
 
@@ -125,7 +128,8 @@ plymouth-theme:
 		--output-dir $(PLYMOUTH_OUTPUT_DIR) \
 		--theme-name $(PLYMOUTH_THEME_NAME) \
 		--fps $(FPS) \
-		--background $(PLYMOUTH_BACKGROUND)
+		--background $(PLYMOUTH_BACKGROUND) \
+		--runtime-themes-dir $(PLYMOUTH_RUNTIME_THEMES_DIR)
 
 clean:
 	rm -rf $(OUTPUT_DIR) $(PLYMOUTH_OUTPUT_DIR) $(GIF) __pycache__
