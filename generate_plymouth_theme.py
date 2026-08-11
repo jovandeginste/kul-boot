@@ -92,7 +92,6 @@ sprite.SetY(Window.GetY());
 screen_width = Window.GetWidth(0);
 screen_height = Window.GetHeight(0);
 sprite.SetImage(frames[0].Scale(screen_width, screen_height));
-prompt_overlay_pixel = Image("prompt_overlay_pixel.png");
 progress_track_pixel = Image("progress_track_pixel.png");
 progress_fill_pixel = Image("progress_fill_pixel.png");
 
@@ -120,7 +119,6 @@ Plymouth.SetRefreshFunction(refresh_callback);
 
 global.password_prompt = Sprite();
 global.password_bullets = Sprite();
-global.password_overlay = Sprite();
 global.status_sprite = Sprite();
 global.progress_track_sprite = Sprite();
 global.progress_fill_sprite = Sprite();
@@ -134,9 +132,8 @@ progress_track_sprite.SetPosition(progress_bar_x, progress_bar_y, 18980);
 progress_fill_sprite.SetImage(progress_fill_pixel.Scale(1, progress_bar_height));
 progress_fill_sprite.SetPosition(progress_bar_x, progress_bar_y, 18985);
 
-fun clear_prompt_ui ()
+fun display_normal_callback ()
   {{
-    password_overlay.SetImage(Image());
     password_prompt.SetImage(Image());
     password_bullets.SetImage(Image());
   }}
@@ -181,21 +178,6 @@ fun boot_progress_callback (duration, progress)
     progress_percent_sprite.SetPosition(percent_x, percent_y, 18990);
   }}
 
-fun display_normal_callback ()
-  {{
-    clear_prompt_ui();
-  }}
-
-fun keyboard_input_callback (text)
-  {{
-    if ((text == "\n") || (text == "\r"))
-      {{
-        clear_prompt_ui();
-        previous_prompt = "";
-        previous_bullets = 0;
-      }}
-  }}
-
 fun display_password_callback (prompt, bullets)
   {{
     prompt_text = prompt;
@@ -217,14 +199,6 @@ fun display_password_callback (prompt, bullets)
     bullets_x = Window.GetX() + (Window.GetWidth() - bullets_image.GetWidth()) / 2;
     bullets_y = prompt_y + 40;
 
-    overlay_width = Window.GetWidth() * 0.96;
-    overlay_height = 140;
-    overlay_x = Window.GetX() + (Window.GetWidth() - overlay_width) / 2;
-    overlay_y = prompt_y - 30;
-
-    password_overlay.SetImage(prompt_overlay_pixel.Scale(overlay_width, overlay_height));
-    password_overlay.SetPosition(overlay_x, overlay_y, 19999);
-
     password_prompt.SetImage(prompt_image);
     password_prompt.SetPosition(prompt_x, prompt_y, 20000);
 
@@ -235,41 +209,8 @@ fun display_password_callback (prompt, bullets)
     previous_bullets = bullets;
   }}
 
-fun display_question_callback (prompt, entry)
-  {{
-    prompt_text = prompt;
-    if (prompt_text == "")
-      prompt_text = "Input:";
-
-    entry_text = entry;
-
-    prompt_image = Image.Text(prompt_text, 1, 1, 1);
-    entry_image = Image.Text(entry_text, 1, 1, 1);
-
-    prompt_x = Window.GetX() + (Window.GetWidth() - prompt_image.GetWidth()) / 2;
-    prompt_y = Window.GetY() + Window.GetHeight() - 160;
-    entry_x = Window.GetX() + (Window.GetWidth() - entry_image.GetWidth()) / 2;
-    entry_y = prompt_y + 40;
-
-    overlay_width = Window.GetWidth() * 0.96;
-    overlay_height = 140;
-    overlay_x = Window.GetX() + (Window.GetWidth() - overlay_width) / 2;
-    overlay_y = prompt_y - 30;
-
-    password_overlay.SetImage(prompt_overlay_pixel.Scale(overlay_width, overlay_height));
-    password_overlay.SetPosition(overlay_x, overlay_y, 19999);
-
-    password_prompt.SetImage(prompt_image);
-    password_prompt.SetPosition(prompt_x, prompt_y, 20000);
-
-    password_bullets.SetImage(entry_image);
-    password_bullets.SetPosition(entry_x, entry_y, 20000);
-  }}
-
 Plymouth.SetDisplayNormalFunction(display_normal_callback);
 Plymouth.SetDisplayPasswordFunction(display_password_callback);
-Plymouth.SetDisplayQuestionFunction(display_question_callback);
-Plymouth.SetKeyboardInputFunction(keyboard_input_callback);
 Plymouth.SetUpdateStatusFunction(update_status_callback);
 Plymouth.SetBootProgressFunction(boot_progress_callback);
 """
@@ -302,10 +243,6 @@ def main() -> None:
         copied_name = f"frame_{index:04d}.png"
         copied_names.append(copied_name)
         shutil.copy2(frame_path, args.output_dir / copied_name)
-
-    overlay_pixel_path = args.output_dir / "prompt_overlay_pixel.png"
-    overlay_pixel = Image.new("RGBA", (1, 1), (0, 0, 0, 232))
-    overlay_pixel.save(overlay_pixel_path)
 
     progress_track_pixel_path = args.output_dir / "progress_track_pixel.png"
     progress_track_pixel = Image.new("RGBA", (1, 1), (0, 0, 0, 192))
