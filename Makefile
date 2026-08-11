@@ -28,6 +28,12 @@ PREVIEW_PLAYER ?= ffplay
 PLYMOUTH_OUTPUT_DIR ?= plymouth-theme-kuleuven-punk
 # Plymouth theme name used for .script and .plymouth files.
 PLYMOUTH_THEME_NAME ?= kuleuven-punk
+# Local directory that contains generated .script/.plymouth and frame files.
+THEME_DIR ?= $(PLYMOUTH_OUTPUT_DIR)
+# Absolute path to the local theme directory for plymouthd.
+THEME_DIR_ABS := $(abspath $(THEME_DIR))
+# Plymouth package path used to locate script plugin for local testing.
+PLYMOUTH_PKG ?= $(shell nix-build '<nixpkgs>' -A plymouth --no-out-link)
 # Background color used by Plymouth theme (hex RGB).
 PLYMOUTH_BACKGROUND ?= 0x000000
 # Optional RNG seed for reproducible flicker patterns.
@@ -107,12 +113,11 @@ preview: gif
 	$(PREVIEW_PLAYER) -fs -autoexit -loglevel warning $(GIF)
 
 preview-plymouth:
+	-sudo plymouth --quit
 	(sleep 15 && sudo plymouth --quit) &
-	sudo bash -c '\
-		plymouthd; \
-		plymouth --show-splash; \
-		plymouth ask-for-password --prompt "LUKS passphrase (test): "; \
-		'
+	sudo plymouthd --debug --mode=boot --theme=$(THEME_DIR_ABS)/$(PLYMOUTH_THEME_NAME).plymouth --theme-path=$(THEME_DIR_ABS) --plugin-path=$(PLYMOUTH_PKG)/lib/plymouth
+	sudo plymouth --show-splash
+	sudo plymouth ask-for-password --prompt "LUKS passphrase (test): "
 
 plymouth-theme:
 	$(PYTHON) $(PLYMOUTH_SCRIPT) \

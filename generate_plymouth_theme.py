@@ -92,6 +92,16 @@ sprite.SetY(Window.GetY());
 screen_width = Window.GetWidth(0);
 screen_height = Window.GetHeight(0);
 sprite.SetImage(frames[0].Scale(screen_width, screen_height));
+prompt_overlay_pixel = Image("prompt_overlay_pixel.png");
+progress_track_pixel = Image("progress_track_pixel.png");
+progress_fill_pixel = Image("progress_fill_pixel.png");
+
+progress_bar_max_width = Math.Int(screen_width * 0.56);
+if (progress_bar_max_width < 260)
+  progress_bar_max_width = 260;
+progress_bar_height = 10;
+progress_bar_x = Window.GetX() + (Window.GetWidth() - progress_bar_max_width) / 2;
+progress_bar_y = Window.GetY() + Window.GetHeight() - 252;
 
 fun refresh_callback ()
   {{
@@ -110,13 +120,80 @@ Plymouth.SetRefreshFunction(refresh_callback);
 
 global.password_prompt = Sprite();
 global.password_bullets = Sprite();
+global.password_overlay = Sprite();
+global.status_sprite = Sprite();
+global.progress_track_sprite = Sprite();
+global.progress_fill_sprite = Sprite();
+global.progress_percent_sprite = Sprite();
 global.previous_prompt = "";
 global.previous_bullets = 0;
 
-fun display_normal_callback ()
+progress_track_sprite.SetImage(progress_track_pixel.Scale(progress_bar_max_width, progress_bar_height));
+progress_track_sprite.SetPosition(progress_bar_x, progress_bar_y, 18980);
+
+progress_fill_sprite.SetImage(progress_fill_pixel.Scale(1, progress_bar_height));
+progress_fill_sprite.SetPosition(progress_bar_x, progress_bar_y, 18985);
+
+fun clear_prompt_ui ()
   {{
+    password_overlay.SetImage(Image());
     password_prompt.SetImage(Image());
     password_bullets.SetImage(Image());
+  }}
+
+fun update_status_callback (text)
+  {{
+    if (text == "")
+      {{
+        status_sprite.SetImage(Image());
+        return;
+      }}
+
+    status_image = Image.Text(text, 1, 1, 1);
+    status_x = Window.GetX() + (Window.GetWidth() - status_image.GetWidth()) / 2;
+    status_y = Window.GetY() + Window.GetHeight() - 220;
+
+    status_sprite.SetImage(status_image);
+    status_sprite.SetPosition(status_x, status_y, 19000);
+  }}
+
+fun boot_progress_callback (duration, progress)
+  {{
+    normalized_progress = progress;
+    if (normalized_progress < 0)
+      normalized_progress = 0;
+    if (normalized_progress > 1)
+      normalized_progress = 1;
+
+    fill_width = Math.Int(progress_bar_max_width * normalized_progress);
+    if (fill_width < 1)
+      fill_width = 1;
+
+    progress_fill_sprite.SetImage(progress_fill_pixel.Scale(fill_width, progress_bar_height));
+    progress_fill_sprite.SetPosition(progress_bar_x, progress_bar_y, 18985);
+
+    percent_text = "" + Math.Int(normalized_progress * 100) + "%";
+    percent_image = Image.Text(percent_text, 1, 1, 1);
+    percent_x = Window.GetX() + (Window.GetWidth() - percent_image.GetWidth()) / 2;
+    percent_y = progress_bar_y - 28;
+
+    progress_percent_sprite.SetImage(percent_image);
+    progress_percent_sprite.SetPosition(percent_x, percent_y, 18990);
+  }}
+
+fun display_normal_callback ()
+  {{
+    clear_prompt_ui();
+  }}
+
+fun keyboard_input_callback (text)
+  {{
+    if ((text == "\n") || (text == "\r"))
+      {{
+        clear_prompt_ui();
+        previous_prompt = "";
+        previous_bullets = 0;
+      }}
   }}
 
 fun display_password_callback (prompt, bullets)
@@ -140,6 +217,14 @@ fun display_password_callback (prompt, bullets)
     bullets_x = Window.GetX() + (Window.GetWidth() - bullets_image.GetWidth()) / 2;
     bullets_y = prompt_y + 40;
 
+    overlay_width = Window.GetWidth() * 0.96;
+    overlay_height = 140;
+    overlay_x = Window.GetX() + (Window.GetWidth() - overlay_width) / 2;
+    overlay_y = prompt_y - 30;
+
+    password_overlay.SetImage(prompt_overlay_pixel.Scale(overlay_width, overlay_height));
+    password_overlay.SetPosition(overlay_x, overlay_y, 19999);
+
     password_prompt.SetImage(prompt_image);
     password_prompt.SetPosition(prompt_x, prompt_y, 20000);
 
@@ -150,8 +235,43 @@ fun display_password_callback (prompt, bullets)
     previous_bullets = bullets;
   }}
 
+fun display_question_callback (prompt, entry)
+  {{
+    prompt_text = prompt;
+    if (prompt_text == "")
+      prompt_text = "Input:";
+
+    entry_text = entry;
+
+    prompt_image = Image.Text(prompt_text, 1, 1, 1);
+    entry_image = Image.Text(entry_text, 1, 1, 1);
+
+    prompt_x = Window.GetX() + (Window.GetWidth() - prompt_image.GetWidth()) / 2;
+    prompt_y = Window.GetY() + Window.GetHeight() - 160;
+    entry_x = Window.GetX() + (Window.GetWidth() - entry_image.GetWidth()) / 2;
+    entry_y = prompt_y + 40;
+
+    overlay_width = Window.GetWidth() * 0.96;
+    overlay_height = 140;
+    overlay_x = Window.GetX() + (Window.GetWidth() - overlay_width) / 2;
+    overlay_y = prompt_y - 30;
+
+    password_overlay.SetImage(prompt_overlay_pixel.Scale(overlay_width, overlay_height));
+    password_overlay.SetPosition(overlay_x, overlay_y, 19999);
+
+    password_prompt.SetImage(prompt_image);
+    password_prompt.SetPosition(prompt_x, prompt_y, 20000);
+
+    password_bullets.SetImage(entry_image);
+    password_bullets.SetPosition(entry_x, entry_y, 20000);
+  }}
+
 Plymouth.SetDisplayNormalFunction(display_normal_callback);
 Plymouth.SetDisplayPasswordFunction(display_password_callback);
+Plymouth.SetDisplayQuestionFunction(display_question_callback);
+Plymouth.SetKeyboardInputFunction(keyboard_input_callback);
+Plymouth.SetUpdateStatusFunction(update_status_callback);
+Plymouth.SetBootProgressFunction(boot_progress_callback);
 """
 
 
@@ -182,6 +302,18 @@ def main() -> None:
         copied_name = f"frame_{index:04d}.png"
         copied_names.append(copied_name)
         shutil.copy2(frame_path, args.output_dir / copied_name)
+
+    overlay_pixel_path = args.output_dir / "prompt_overlay_pixel.png"
+    overlay_pixel = Image.new("RGBA", (1, 1), (0, 0, 0, 232))
+    overlay_pixel.save(overlay_pixel_path)
+
+    progress_track_pixel_path = args.output_dir / "progress_track_pixel.png"
+    progress_track_pixel = Image.new("RGBA", (1, 1), (0, 0, 0, 192))
+    progress_track_pixel.save(progress_track_pixel_path)
+
+    progress_fill_pixel_path = args.output_dir / "progress_fill_pixel.png"
+    progress_fill_pixel = Image.new("RGBA", (1, 1), (255, 255, 255, 244))
+    progress_fill_pixel.save(progress_fill_pixel_path)
 
     script_content = generate_script(
         theme_name=args.theme_name,
