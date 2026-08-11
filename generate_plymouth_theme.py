@@ -180,12 +180,18 @@ fun boot_progress_callback (duration, progress)
 
 fun display_password_callback (prompt, bullets)
   {{
+    if ((bullets == 0) && (previous_bullets > 0))
+      {{
+        password_prompt.SetImage(Image());
+        password_bullets.SetImage(Image());
+        previous_prompt = "";
+        previous_bullets = bullets;
+        return;
+      }}
+
     prompt_text = prompt;
     if (prompt_text == "")
       prompt_text = "Passphrase:";
-
-    if ((bullets == 0) && (previous_bullets > 0) && (prompt_text == previous_prompt))
-      prompt_text = "Unlocking...";
 
     bullet_text = "";
     for (index = 0; index < bullets; index++)
