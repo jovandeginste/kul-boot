@@ -78,7 +78,7 @@ LOGO_FLICKER_ON_PROBABILITY ?= 0.20
 # Adds --seed only when SEED is set.
 SEED_ARG := $(if $(SEED),--seed $(SEED),)
 
-.PHONY: generate gif preview preview-sequence plymouth-theme clean
+.PHONY: generate gif preview preview-sequence plymouth-theme lint clean
 
 generate:
 	$(PYTHON) $(SCRIPT) \
@@ -133,3 +133,7 @@ plymouth-theme:
 
 clean:
 	rm -rf $(OUTPUT_DIR) $(PLYMOUTH_OUTPUT_DIR) $(GIF) __pycache__
+
+lint:
+	black --check *.py
+

@@ -120,6 +120,7 @@
           packages = [
             python
             pkgs.ffmpeg
+            pkgs.black
           ];
         };
       }

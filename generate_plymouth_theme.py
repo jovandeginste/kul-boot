@@ -186,6 +186,13 @@ fun display_password_callback (prompt, bullets)
     for (index = 0; index < bullets; index++)
       bullet_text = bullet_text + "*";
 
+    if (bullets == 0 && prompt == "")
+      {{
+        password_prompt.SetImage(Image());
+        password_bullets.SetImage(Image());
+        return;
+      }}
+
     prompt_image = Image.Text(prompt_text, 0, 240 / 255.0, 1.0);
     bullets_image = Image.Text(bullet_text, 0, 240 / 255.0, 1.0);
 

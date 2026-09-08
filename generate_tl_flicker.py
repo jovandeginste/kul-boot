@@ -11,7 +11,6 @@ from pathlib import Path
 
 from PIL import Image
 
-
 WORKER_CONTEXT: dict[str, object] = {}
 
 
