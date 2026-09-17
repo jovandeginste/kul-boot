@@ -162,6 +162,9 @@
             "rd.udev.log_level=3"
             "udev.log_priority=3"
           ];
+          boot.initrd.systemd.services.plymouth-start.unitConfig.DefaultDependencies = false;
+          boot.initrd.systemd.services.plymouth-start.before = [ "sysroot.mount" "initrd-switch-root.target" ];
+          boot.initrd.systemd.services.plymouth-start.wantedBy = [ "sysroot.mount" "initrd-switch-root.target" "hibernate-resume.service" ];
         };
       };
     };
