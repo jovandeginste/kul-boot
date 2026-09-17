@@ -29,6 +29,7 @@ nix develop
 - `make preview` - build GIF and preview it with `ffplay`
 - `make preview-sequence` - preview raw PNG sequence directly
 - `make plymouth-theme` - generate Plymouth theme directory
+- `make package` - build and package the Plymouth theme into a tarball (`kuleuven-punk-plymouth.tar.gz`) for other operating systems (e.g. Fedora Silverblue)
 - `make clean` - remove generated files
 
 ## Typical Workflow

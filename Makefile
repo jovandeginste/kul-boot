@@ -26,6 +26,8 @@ GIF ?= tl-flicker.gif
 PREVIEW_PLAYER ?= ffplay
 # Output directory where Plymouth theme files are written.
 PLYMOUTH_OUTPUT_DIR ?= plymouth-theme-kuleuven-punk
+# Archive filename for distribution/download (e.g., for Fedora Silverblue)
+ARCHIVE_NAME ?= kuleuven-punk-plymouth.tar.gz
 # Plymouth theme name used for .script and .plymouth files.
 PLYMOUTH_THEME_NAME ?= kuleuven-punk
 # Local directory that contains generated .script/.plymouth and frame files.
@@ -78,7 +80,7 @@ LOGO_FLICKER_ON_PROBABILITY ?= 0.20
 # Adds --seed only when SEED is set.
 SEED_ARG := $(if $(SEED),--seed $(SEED),)
 
-.PHONY: generate gif preview preview-sequence plymouth-theme lint clean
+.PHONY: generate gif preview preview-sequence plymouth-theme package lint clean
 
 generate:
 	$(PYTHON) $(SCRIPT) \
@@ -131,8 +133,11 @@ plymouth-theme:
 		--background $(PLYMOUTH_BACKGROUND) \
 		--runtime-themes-dir $(PLYMOUTH_RUNTIME_THEMES_DIR)
 
+package: generate plymouth-theme
+	tar -czf $(ARCHIVE_NAME) -C $(PLYMOUTH_OUTPUT_DIR)/.. $(notdir $(PLYMOUTH_OUTPUT_DIR))
+
 clean:
-	rm -rf $(OUTPUT_DIR) $(PLYMOUTH_OUTPUT_DIR) $(GIF) __pycache__
+	rm -rf $(OUTPUT_DIR) $(PLYMOUTH_OUTPUT_DIR) $(GIF) $(ARCHIVE_NAME) __pycache__
 
 lint:
 	black --check *.py
